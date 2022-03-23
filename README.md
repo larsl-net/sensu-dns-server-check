@@ -90,4 +90,4 @@ go build
 
 For more information about contributing to this plugin, see [Contributing][1].
 
-[1]: https://github.com/larsl-net/sensu-check-dns-server/blob/master/CONTRIBUTING.md
+[1]: https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
