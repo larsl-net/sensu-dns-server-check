@@ -7,6 +7,11 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## [0.0.2] - 2022-03-26
+
+### Added
+- Add Timeout Option
+
 ## [0.0.1] - 2022-03-23
 
 ### Added

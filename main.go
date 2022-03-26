@@ -7,12 +7,11 @@ import (
 	"os"
 	"strconv"
 	"crypto/tls"
-
+	"time"
 
 	"github.com/miekg/dns"
 	"github.com/sensu-community/sensu-plugin-sdk/sensu"
 	"github.com/sensu/sensu-go/types"
-	// udp, tcp, dot
 )
 
 // Config represents the check plugin config.
@@ -23,6 +22,7 @@ type Config struct {
 	Record	   string
 	Server     string
 	ServerName string
+	Timeout    string
 }
 
 var (
@@ -81,6 +81,15 @@ var (
 			Usage:     "Hostname for DoT",
 			Value:     &plugin.ServerName,
 		},
+		&sensu.PluginConfigOption{
+			Path:      "timeout",
+			Env:       "CHECK_TIMEOUT",
+			Argument:  "timeout",
+			Shorthand: "t",
+			Default:   "2s",
+			Usage:     "Timeout for Query",
+			Value:     &plugin.Timeout,
+		},
 	}
 )
 
@@ -119,13 +128,18 @@ func checkArgs(event *types.Event) (int, error) {
 
 func executeCheck(event *types.Event) (int, error) {
 	state := 0
+	timeout, _ := time.ParseDuration(plugin.Timeout)
+	
 	var err error
 	if plugin.Protocol == "udp" {
-		c := dns.Client{}
+		c := dns.Client{
+			Timeout: timeout,
+		}
 		state, err = checkDNS(plugin.Server, &c)
 	} else if plugin.Protocol == "tcp" {
 		c := dns.Client{
 			Net: "tcp",
+			Timeout: timeout,
 		}
 		state, err = checkDNS(plugin.Server, &c)
 	} else if plugin.Protocol == "dot" {
@@ -134,8 +148,11 @@ func executeCheck(event *types.Event) (int, error) {
 			TLSConfig: &tls.Config{
 				ServerName: plugin.ServerName,
 			},
+			Timeout: timeout,
 		}
 		state, err = checkDNS(plugin.Server, &c)
+	} else if plugin.Protocol == "doh" {
+		state, err = checkDoH(plugin.Server)
 	}
 	if err != nil {
 		fmt.Printf("%s CRITICAL: failed to run check, error: %v\n", plugin.PluginConfig.Name, err)
@@ -149,7 +166,8 @@ func isValidProtocol(protocol string) bool {
 	case
 		"udp",
 		"tcp",
-		"dot":
+		"dot",
+		"doh":
 		return true
 	}
 	return false
@@ -197,4 +215,15 @@ func checkDNS(server string, c *dns.Client) (int, error) {
 	
 	fmt.Printf("%s OK: %s returns %s\n", plugin.PluginConfig.Name, plugin.Record, Records)
 	return sensu.CheckStateOK, nil
+}
+
+func checkDoH(server string) (int, error) {
+	m := dns.Msg{}
+	//// A
+	m.SetQuestion(plugin.Record+".", dns.TypeA)
+	
+	//result := resolvers.lookup(dohResolver, m)
+	//fmt.Println(result)
+	fmt.Printf("%T", m)
+	return 0, nil
 }

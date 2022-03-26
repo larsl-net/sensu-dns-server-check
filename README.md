@@ -1,7 +1,7 @@
-# sensu-check-dns-server
+# sensu-dns-server-check
 
 ## Table of Contents
-- [sensu-check-dns-server](#sensu-check-dns-server)
+- [sensu-dns-server-check](#sensu-dns-server-check)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Usage examples](#usage-examples)
@@ -38,6 +38,7 @@ Flags:
   -r, --record string        DNS Record to check (default "sensu.io")
   -s, --server string        DNS Server to check
   -n, --server-name string   Hostname for DoT
+  -t, --timeout string       Timeout for Query (default "2s")
 
 Use "sensu-dns-server-check [command] --help" for more information about a command.
 ```
@@ -51,7 +52,7 @@ consider doing so! If you're using sensuctl 5.13 with Sensu Backend 5.13 or late
 following command to add the asset:
 
 ```
-sensuctl asset add larsl-net/sensu-check-dns-server
+sensuctl asset add larsl-net/sensu-dns-server-check
 ```
 
 If you're using an earlier version of sensuctl, you can find the asset on the [Bonsai Asset Index][https://bonsai.sensu.io/assets/larsl-net/sensu-check-dns-server].
@@ -70,7 +71,7 @@ spec:
   subscriptions:
   - system
   runtime_assets:
-  - larsl-net/sensu-check-dns-server
+  - larsl-net/sensu-dns-server-check
 ```
 
 ## Installation from source
@@ -79,7 +80,7 @@ The preferred way of installing and deploying this plugin is to use it as an Ass
 like to compile and install the plugin from source or contribute to it, download the latest version
 or create an executable script from this source.
 
-From the local path of the sensu-check-dns-server repository:
+From the local path of the sensu-dns-server-check repository:
 
 ```
 go build
@@ -91,3 +92,5 @@ go build
 For more information about contributing to this plugin, see [Contributing][1].
 
 [1]: https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
+[6]: https://docs.sensu.io/sensu-go/latest/reference/checks/
+[10]: https://docs.sensu.io/sensu-go/latest/reference/assets/
